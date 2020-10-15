@@ -11,18 +11,44 @@
 <body>
     <div class="header">
         <h1>Game of Life</h1>
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            Neque doloribus obcaecati ratione dolores beatae repellat
-            dolore blanditiis facilis cum voluptas? Soluta nihil ullam
-            nemo, reprehenderit eum dolore ipsam molestiae aspernatur?
+        <p class="intro">
+            A recreation of John Conway's Game of Life (Also known
+            simply as life). It is a zero-player game that involves
+            creating an initial state and observing the evolution
+            according to a simple set of rules: <br>
+            <br>1. Any live cell with two or three live neighbours survives.
+            <br>2. Any dead cell with three live neighbours becomes a live cell.
+            <br>3. All other live cells die in the next generation. Similarly,
+            all other dead cells stay dead.
         </p>
-        <button class="btn start">Start</button>
-        <button class="btn next">Next</button>
-        <button class="btn rst">Reset</button>
-        <button class="btn neighbours">Neighbours</button>
-        <button class="btn colours">Colours</button>
     </div>
-    <canvas id="gameCanvas" width="500" height="500"></canvas>
+    <div class="play-space">
+        <canvas id="gameCanvas" width="500" height="500"></canvas>
+        <div class="controls">
+            <button class="btn start">Start</button>
+            <button class="btn next">Next</button>
+            <button class="btn rst">Reset</button>
+            <button class="btn neighbours">Neighbours</button>
+            <button class="btn colours">Colours</button>
+        </div>  
+    </div>
+    <div class="instructions">
+        <h2>How to play</h2>
+        <p class="basics">
+            To play the game simply select the squares to make them 'alive'
+            and hit the 'Next' button to proceed to the next generation.
+            The 'Start' button will automatically iterate through generations
+            until the button is pressed again. To reset the board, hit the
+            reset button.
+        </p>
+        <p class="game-state">
+            To view information regarding the state of the game, press either
+            the Neighbours or Colours Button. The Neighbours button will display
+            the number of alive cells surrounding any individual cell. The Colours
+            button will colour code which cells will live and die in the next generation.
+        </p>
+    </div>
+
     <script src="life.js"></script>
 </body>
 

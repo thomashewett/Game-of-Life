@@ -1,3 +1,20 @@
+/* -------------------------------------------------------------------------- */
+/*                                Game of Life                                */
+/* -------------------------------------------------------------------------- */
+/** 
+ * Author:          Thomas Hewett (https://github.com/thomashewett)
+ * Creation Date:   15/10/2020
+ * Description:     A recreation of John Conway's Game of Life (Also known 
+ *                  simply as life). It is a zero-player game that involves 
+ *                  creating an initial state and observing the evolution 
+ *                  according to a simple set of rules:
+ *                  1. Any live cell with two or three live neighbours survives.
+ *                  2. Any dead cell with three live neighbours becomes a live cell.
+ *                  3. All other live cells die in the next generation. Similarly, 
+ *                  all other dead cells stay dead.
+ */
+
+ 
 /* -------------------------------- Variables ------------------------------- */
 
 //canvas variables
@@ -13,7 +30,7 @@ const GRID_STROKE_WIDTH = 1;
 const GRID_COLOUR = "#0095DD";
 const BACKGROUND_COLOUR = "white";
 const NEXT_ALIVE_COLOUR = "yellow";
-const NEXT_DEAD_COLOUR = "grey";
+const NEXT_DEAD_COLOUR = "red";
 
 //cell variables
 const CELL_HEIGHT = canvasHeight / CELL_ROW_COUNT;
@@ -51,6 +68,7 @@ document.querySelector('.start').addEventListener('click', startButtonHandler);
 document.querySelector('.next').addEventListener('click', nextButtonHandler);
 document.querySelector('.rst').addEventListener('click', resetButtonHandler);
 document.querySelector('.neighbours').addEventListener('click', neighbourButtonHandler);
+document.querySelector('.colours').addEventListener('click', colourButtonHandler);
 
 /* ------------------------------- Handlers ------------------------------- */
 
@@ -95,24 +113,52 @@ function neighbourButtonHandler(e) {
     draw();
 }
 
+function colourButtonHandler(e) {
+    displayAliveDeadNext = !displayAliveDeadNext;
+    draw();
+}
+
 /* ----------------------------- Draw Functions ----------------------------- */
 
 function drawCells() {
     for (let c = 0; c < CELL_COLUMN_COUNT; c++) {
         for (let r = 0; r < CELL_ROW_COUNT; r++) {
-            if (displayAliveDeadNext) {
-
-            } else {
-                if (cells[c][r].alive == true) {
-                    ctx.beginPath();
-                    ctx.rect(cells[c][r].x, cells[c][r].y, CELL_WIDTH, CELL_HEIGHT);
-                    ctx.fillStyle = CELL_COLOUR;
-                    ctx.fill();
-                    ctx.closePath();
-                }
-            }
+            fillCell(c, r);
         }
     }
+}
+
+function fillCell(cellX, cellY) {
+
+    let fillColour = BACKGROUND_COLOUR;
+    
+    if (displayAliveDeadNext) { //When true, will show the next generation of alive/dead cells
+        if (cells[cellX][cellY].alive == true) {
+            if (cells[cellX][cellY].neighbours > 3)
+                fillColour = NEXT_DEAD_COLOUR;
+            else if (cells[cellX][cellY].neighbours < 2)
+                fillColour = NEXT_DEAD_COLOUR;
+            else
+                fillColour = CELL_COLOUR;
+        } else if (cells[cellX][cellY].neighbours == 3)
+            fillColour = NEXT_ALIVE_COLOUR;
+
+        ctx.beginPath();
+        ctx.rect(cells[cellX][cellY].x, cells[cellX][cellY].y, CELL_WIDTH, CELL_HEIGHT);
+        ctx.fillStyle = fillColour;
+        ctx.fill();
+        ctx.closePath();
+    
+    } else if (cells[cellX][cellY].alive == true) { //default cell colouring
+        fillColour = CELL_COLOUR;
+        ctx.beginPath();
+        ctx.rect(cells[cellX][cellY].x, cells[cellX][cellY].y, CELL_WIDTH, CELL_HEIGHT);
+        ctx.fillStyle = fillColour;
+        ctx.fill();
+        ctx.closePath();
+    }
+
+
 }
 
 function drawGrid() {
@@ -138,7 +184,7 @@ function draw() {
     drawCells();
     drawGrid();
     if (displayNeighbours)
-        displayNeighbourCount(); //purely for testing
+        displayNeighbourCount();
 }
 
 /* --------------------------------- Testing -------------------------------- */
@@ -199,6 +245,7 @@ function nextGeneration() {
     calculateNeighbourCount();
 }
 
+//Controls game logic and timing on next generation
 function gameLoop() {
     if (playing || iterateGeneration) {
         nextGeneration();
@@ -208,11 +255,12 @@ function gameLoop() {
     }
 }
 
+//Initialises the game by drawing the play area
 function startGame() {
     draw();
-    gameLoop();
 }
 
 startGame();
 
+//TODO: Set the generation time to be controlled with a slider
 setInterval(gameLoop, GENERATION_TIME);

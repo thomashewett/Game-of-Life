@@ -14,7 +14,7 @@
  *                  all other dead cells stay dead.
  */
 
- 
+
 /* -------------------------------- Variables ------------------------------- */
 
 //canvas variables
@@ -26,16 +26,17 @@ const canvasWidth = canvas.width;
 //grid variables
 const CELL_COLUMN_COUNT = 20;
 const CELL_ROW_COUNT = 20;
-const GRID_STROKE_WIDTH = 1;
-const GRID_COLOUR = "#0095DD";
-const BACKGROUND_COLOUR = "white";
-const NEXT_ALIVE_COLOUR = "yellow";
+const BORDER_STROKE_WIDTH = 4;
+const BORDER_COLOUR = "#FFFFFF";
+const GRID_STROKE_WIDTH = 1.5;
+const GRID_COLOUR = "#FFFFFF";
+const NEXT_ALIVE_COLOUR = "#00DBDB";
 const NEXT_DEAD_COLOUR = "red";
 
 //cell variables
 const CELL_HEIGHT = canvasHeight / CELL_ROW_COUNT;
 const CELL_WIDTH = canvasWidth / CELL_COLUMN_COUNT;
-const CELL_COLOUR = "#0095DD";
+const CELL_COLOUR = "#FFFFFF";
 const NEIGHBOUR_COUNT_COLOUR = "black";
 let cells = [];
 for (let c = 0; c < CELL_COLUMN_COUNT; c++) {
@@ -87,10 +88,18 @@ function mouseDownHandler(e) {
 
 function startButtonHandler(e) {
     playing = !playing;
+    startButton = document.querySelector('.start');
     if (playing)
-        document.querySelector('.start').innerHTML = "Stop";
+    {
+        startButton.innerHTML = "Stop";
+        startButton.classList.add("activated");
+        console.log(startButton);
+    }     
     else
-        document.querySelector('.start').innerHTML = "Start";
+    {
+        startButton.innerHTML = "Start";
+        startButton.classList.remove("activated");
+    }
 }
 
 function nextButtonHandler(e) {
@@ -110,11 +119,19 @@ function resetButtonHandler(e) {
 
 function neighbourButtonHandler(e) {
     displayNeighbours = !displayNeighbours;
+    if(displayNeighbours)
+        document.querySelector('.neighbours').classList.add("activated");
+    else
+        document.querySelector('.neighbours').classList.remove("activated");
     draw();
 }
 
 function colourButtonHandler(e) {
     displayAliveDeadNext = !displayAliveDeadNext;
+    if(displayAliveDeadNext)
+        document.querySelector('.colours').classList.add("activated");
+    else
+        document.querySelector('.colours').classList.remove("activated");
     draw();
 }
 
@@ -130,7 +147,7 @@ function drawCells() {
 
 function fillCell(cellX, cellY) {
 
-    let fillColour = BACKGROUND_COLOUR;
+    let fillColour = "";
     
     if (displayAliveDeadNext) { //When true, will show the next generation of alive/dead cells
         if (cells[cellX][cellY].alive == true) {
@@ -143,11 +160,14 @@ function fillCell(cellX, cellY) {
         } else if (cells[cellX][cellY].neighbours == 3)
             fillColour = NEXT_ALIVE_COLOUR;
 
-        ctx.beginPath();
-        ctx.rect(cells[cellX][cellY].x, cells[cellX][cellY].y, CELL_WIDTH, CELL_HEIGHT);
-        ctx.fillStyle = fillColour;
-        ctx.fill();
-        ctx.closePath();
+        if(fillColour !== "")
+        {
+            ctx.beginPath();
+            ctx.rect(cells[cellX][cellY].x, cells[cellX][cellY].y, CELL_WIDTH, CELL_HEIGHT);
+            ctx.fillStyle = fillColour;
+            ctx.fill();
+            ctx.closePath();
+        }
     
     } else if (cells[cellX][cellY].alive == true) { //default cell colouring
         fillColour = CELL_COLOUR;
@@ -163,6 +183,7 @@ function fillCell(cellX, cellY) {
 
 function drawGrid() {
     //draw gridlines
+    ctx.beginPath();
     for (let c = 1; c < CELL_COLUMN_COUNT; c++) {
         ctx.moveTo(c * CELL_WIDTH, 0);
         ctx.lineTo(c * CELL_WIDTH, canvasHeight);
@@ -176,6 +197,10 @@ function drawGrid() {
     ctx.stroke();
 
     //draw border
+    ctx.beginPath();
+    ctx.lineWidth = BORDER_STROKE_WIDTH;
+    ctx.strokeStyle = BORDER_COLOUR;
+    ctx.stroke();
     ctx.strokeRect(0, 0, canvasHeight, canvasWidth);
 }
 
@@ -184,11 +209,11 @@ function draw() {
     drawCells();
     drawGrid();
     if (displayNeighbours)
-        displayNeighbourCount();
+        drawNeighbourCount();
 }
 
-/* --------------------------------- Testing -------------------------------- */
-function displayNeighbourCount() {
+//TODO: Fix centering/colours/size of displayed numbers
+function drawNeighbourCount() {
     ctx.font = "20px Arial";
     ctx.fillStyle = NEIGHBOUR_COUNT_COLOUR;
 
